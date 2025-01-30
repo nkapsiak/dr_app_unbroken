@@ -1,34 +1,46 @@
 <?php
-require_once 'db_connection.php';
+include('db_connection.php');
+header('Content-Type: application/json');
 
+$response = array();
+
+// Check for doctor_id in request
 if (isset($_GET['doctor_id'])) {
     $doctor_id = $_GET['doctor_id'];
 
-    // SQL query to get appointments for the doctor
-    $query = "SELECT a.appointment_id, a.user_id, u.username AS user_name, a.description, a.appointment_datetime
-              FROM appointments a
-              JOIN users u ON a.user_id = u.user_id
-              WHERE a.doctor_id = $doctor_id";
+    // Query to fetch appointments and user full name
+    $query = "
+    SELECT 
+        a.appointment_id, 
+        a.appointment_datetime, 
+        a.description, 
+        CONCAT(u.first_name, ' ', u.last_name) AS user_name 
+    FROM 
+        appointments a 
+    JOIN 
+        users u ON a.user_id = u.user_id 
+    WHERE 
+        a.doctor_id = '$doctor_id'";
 
+    // Execute the query
     $result = mysqli_query($conn, $query);
 
-    if (mysqli_num_rows($result) > 0) {
-        $appointments = [];
+    if ($result) {
+        $appointments = array();
         while ($row = mysqli_fetch_assoc($result)) {
-            $appointments[] = [
-                'appointment_id' => $row['appointment_id'],
-                'user_name' => $row['user_name'],
-                'description' => $row['description'],
-                'appointment_datetime' => $row['appointment_datetime'],
-            ];
+            $appointments[] = $row;
         }
-        echo json_encode(['status' => 'success', 'appointments' => $appointments]);
+
+        $response['status'] = 'success';
+        $response['appointments'] = $appointments;
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'No appointments found']);
+        $response['status'] = 'error';
+        $response['message'] = 'Failed to fetch appointments';
     }
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'Doctor ID not provided']);
+    $response['status'] = 'error';
+    $response['message'] = 'Doctor ID not provided';
 }
 
-mysqli_close($conn);
+echo json_encode($response);
 ?>
