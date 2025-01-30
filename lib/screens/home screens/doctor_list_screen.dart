@@ -39,7 +39,7 @@ class _DoctorListScreen extends State<DoctorListScreen> {
   }
 
   Future<void> fetchDoctors() async {
-    final response = await http.get(Uri.parse('http://10.0.2.2/doctor_appointment_api/get_doctors.php'));
+    final response = await http.get(Uri.parse('http://192.168.1.121/doctor_appointment_api/get_doctors.php'));
 
     if (response.statusCode == 200) {
       setState(() {

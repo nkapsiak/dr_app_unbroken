@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'package:dr_app_unbroken/screens/settings%20screen/settings_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../controllers/user provider/user_provider.dart';
 import '../book appointment screens/book_appointment_screen.dart';
 import 'doctor_list_screen.dart';
 import 'widgets/clinic_visit_button.dart';
@@ -42,7 +45,7 @@ import 'widgets/symptom_row.dart';
 // //   }
 // //
 // //   Future<void> fetchDoctors() async {
-// //     final response = await http.get(Uri.parse('http://10.0.2.2/doctor_appointment_api/get_doctors.php'));
+// //     final response = await http.get(Uri.parse('http://192.168.1.121/doctor_appointment_api/get_doctors.php'));
 // //
 // //     if (response.statusCode == 200) {
 // //       setState(() {
@@ -460,7 +463,7 @@ import 'widgets/symptom_row.dart';
 //   }
 //
 //   Future<void> fetchDoctors() async {
-//     final response = await http.get(Uri.parse('http://10.0.2.2/doctor_appointment_api/get_doctors.php'));
+//     final response = await http.get(Uri.parse('http://192.168.1.121/doctor_appointment_api/get_doctors.php'));
 //
 //     if (response.statusCode == 200) {
 //       setState(() {
@@ -549,8 +552,7 @@ import 'widgets/symptom_row.dart';
 //   }
 // }
 class UserHomeScreen extends StatefulWidget {
-  final String userName; // Declare a field for the user's name
-
+  final String userName;// Declare a field for the user's name
   // Pass the user's name when navigating to this screen
   UserHomeScreen({required this.userName});
 
@@ -560,6 +562,7 @@ class UserHomeScreen extends StatefulWidget {
 
 class _UserHomeScreenState extends State<UserHomeScreen> {
   List<Map<String, dynamic>> doctors = [];
+  String _userFullName = '';
   bool isLoading = true;
 
   List<String> symptoms = [
@@ -582,10 +585,70 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   void initState() {
     super.initState();
     fetchDoctors();
+    _fetchUserDetails();
+  }
+  // Fetch user details (first and last name)
+  Future<void> _fetchUserDetails() async {
+    final userId = Provider.of<UserProvider>(context, listen: false).userId;
+    if (userId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('User not logged in')),
+      );
+      return;
+    }
+
+    final response = await http.get(
+      Uri.parse('http://192.168.1.121/doctor_appointment_api/get_user_details.php?user_id=$userId'),
+    );
+
+    if (response.statusCode == 200) {
+      try {
+        final data = json.decode(response.body);
+        if (data['status'] == 'success') {
+          setState(() {
+            _userFullName = '${data['first_name']} ${data['last_name']}';
+            isLoading = false;
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(data['message'] ?? 'Failed to fetch user details')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error parsing response: $e')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${response.statusCode}')),
+      );
+    }
   }
 
+  void _onMenuItemSelected(String value) {
+    switch (value) {
+      case 'profile':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => DoctorListScreen()),
+        );
+        break;
+      case 'settings':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SettingsScreen()),
+        );
+        break;
+      case 'logout':
+      // Perform logout action here
+        break;
+    }
+  }
+
+
   Future<void> fetchDoctors() async {
-    final response = await http.get(Uri.parse('http://10.0.2.2/doctor_appointment_api/get_doctors.php'));
+    final response = await http.get(Uri.parse('http://192.168.1.121/doctor_appointment_api/get_doctors.php'));
     print('Doctor data: ${response.body}');
     if (response.statusCode == 200) {
       setState(() {
@@ -610,7 +673,48 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Doctor Appointment App'),
+        actions:
+      <Widget>[
+      // Overflow menu (three dots menu)
+      PopupMenuButton<String>(
+        onSelected: _onMenuItemSelected,  // Callback when an option is selected
+        itemBuilder: (BuildContext context) {
+          return [
+            PopupMenuItem<String>(
+              value: 'profile',
+              child: Row(
+                children: <Widget>[
+                  Icon(Icons.account_circle),
+                  SizedBox(width: 8),
+                  Text('Profile')
+                ],
+              ),
+            ),
+            PopupMenuItem<String>(
+              value: 'settings',
+              child: Row(
+                children: <Widget>[
+                  Icon(Icons.settings),
+                  SizedBox(width: 8),
+                  Text('Settings')
+                ],
+              ),
+            ),
+            PopupMenuItem<String>(
+              value: 'logout',
+              child: Row(
+                children: <Widget>[
+                  Icon(Icons.logout),
+                  SizedBox(width: 8),
+                  Text('Logout')
+                ],
+              ),
+            ),
+          ];
+        },
       ),
+      ],
+    ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -623,10 +727,10 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Hello ${widget.userName}", // Display dynamic username
-                    style: TextStyle(fontSize: 35, fontWeight: FontWeight.w500),
-                  ),
+                    Text(
+                      'Welcome, $_userFullName!',
+                      style: TextStyle(fontSize: 24),
+                    ),
                   CircleAvatar(
                     radius: 25,
                     backgroundImage: AssetImage("images/doctor 1.jpg"),

@@ -31,7 +31,7 @@ class _ViewAppointmentsScreenState extends State<ViewAppointmentsScreen> {
     }
 
     final response = await http.get(
-      Uri.parse('http://10.0.2.2/doctor_appointment_api/get_appointments.php?user_id=$userId'),
+      Uri.parse('http://192.168.1.121/doctor_appointment_api/get_appointments.php?user_id=$userId'),
     );
 
     print('Response status: ${response.statusCode}');
@@ -62,6 +62,42 @@ class _ViewAppointmentsScreenState extends State<ViewAppointmentsScreen> {
     }
   }
 
+  // Cancel an appointment
+  Future<void> _cancelAppointment(String appointmentId) async {
+    final userId = Provider.of<UserProvider>(context, listen: false).userId;
+    if (userId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('User not logged in')),
+      );
+      return;
+    }
+
+    final response = await http.post(
+      Uri.parse('http://192.168.1.121/doctor_appointment_api/cancel_appointment.php'),
+      body: {
+        'user_id': userId,
+        'appointment_id': appointmentId,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Appointment cancelled successfully')),
+        );
+        _fetchAppointments(); // Refresh the appointment list
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to cancel appointment')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${response.statusCode}')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +119,18 @@ class _ViewAppointmentsScreenState extends State<ViewAppointmentsScreen> {
           return ListTile(
             title: Text(appointment['description']),
             subtitle: Text(formattedDate),
-            trailing: Icon(Icons.calendar_today),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.calendar_today),
+                IconButton(
+                  icon: Icon(Icons.cancel),
+                  onPressed: () {
+                    _cancelAppointment(appointment['appointment_id'].toString());
+                  },
+                ),
+              ],
+            ),
           );
         },
       ),

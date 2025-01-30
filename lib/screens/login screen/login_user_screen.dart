@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dr_app_unbroken/screens/forgot%20password/reset_password_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../../controllers/user provider/user_provider.dart';
+import '../forgot password/forgot_password_screen.dart';
 import '../home screens/user_home_screen.dart';
 
 class LoginUserScreen extends StatefulWidget {
@@ -37,7 +39,7 @@ class _LoginUserScreenState extends State<LoginUserScreen> {
     });
 
     final response = await http.post(
-      Uri.parse('http://10.0.2.2/doctor_appointment_api/login_user.php'),
+      Uri.parse('http://192.168.1.121/doctor_appointment_api/login_user.php'),
       body: {
         'username': username,
         'password': password,
@@ -197,25 +199,40 @@ Widget build(BuildContext context) {
                   ),
                 ),
                 SizedBox(height: 20,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Column(
                   children: [
-                    Text("Don't have an account?",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black54,
-                      ),),
-                    TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/userRegister');
-                        },
-                        child: Text("Create Account",
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Don't have an account?",
                           style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF700031)
-                          ),))
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black54,
+                          ),),
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/userRegister');
+                            },
+                            child: Text("Create Account",
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF700031)
+                              ),)),
+
+                      ],
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
+                        );
+                      },
+                      child: Text('Forgot Password?'),
+                    )
+
                   ],
                 )
 

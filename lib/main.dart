@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
         '/userHome': (context) {
              final userName = ModalRoute.of(context)?.settings.arguments as String? ?? '';
              print('UserHomeScreen received username: $userName');
-              return UserHomeScreen(userName: userName);
+              return UserHomeScreen(userName: userName,);
               },
         '/viewAppointments': (context) => ViewAppointmentsScreen(),
         '/doctorHome': (context) {
@@ -117,7 +117,7 @@ class MyApp extends StatelessWidget {
 //     });
 //
 //     final response = await http.post(
-//       Uri.parse('http://10.0.2.2/doctor_appointment_api/login_doctor.php'),
+//       Uri.parse('http://192.168.1.121/doctor_appointment_api/login_doctor.php'),
 //       body: {
 //         'username': username,
 //         'password': password,
@@ -213,7 +213,7 @@ class MyApp extends StatelessWidget {
 //     });
 //
 //     final response = await http.post(
-//       Uri.parse('http://10.0.2.2/doctor_appointment_api/login_user.php'),
+//       Uri.parse('http://192.168.1.121/doctor_appointment_api/login_user.php'),
 //       body: {
 //         'username': username,
 //         'password': password,
@@ -316,7 +316,7 @@ class MyApp extends StatelessWidget {
 //
 //     // Send the data to the backend PHP file
 //     final response = await http.post(
-//       Uri.parse('http://10.0.2.2/doctor_appointment_api/register_doctor.php'), // Localhost address for emulator
+//       Uri.parse('http://192.168.1.121/doctor_appointment_api/register_doctor.php'), // Localhost address for emulator
 //       body: {
 //         'name': name,
 //         'specialty': specialty,
@@ -423,7 +423,7 @@ class MyApp extends StatelessWidget {
 //     });
 //
 //     final response = await http.post(
-//       Uri.parse('http://10.0.2.2/doctor_appointment_api/register_user.php'),
+//       Uri.parse('http://192.168.1.121/doctor_appointment_api/register_user.php'),
 //       body: {
 //         'name': name,
 //         'username': username,
@@ -507,7 +507,7 @@ class MyApp extends StatelessWidget {
 //   }
 //
 //   Future<void> fetchDoctors() async {
-//     final response = await http.get(Uri.parse('http://10.0.2.2/doctor_appointment_api/get_doctors.php'));
+//     final response = await http.get(Uri.parse('http://192.168.1.121/doctor_appointment_api/get_doctors.php'));
 //
 //     if (response.statusCode == 200) {
 //       setState(() {
@@ -557,7 +557,7 @@ class MyApp extends StatelessWidget {
 //   }
 //
 //   Future<void> fetchDoctors() async {
-//     final response = await http.get(Uri.parse('http://10.0.2.2/doctor_appointment_api/get_doctors.php'));
+//     final response = await http.get(Uri.parse('http://192.168.1.121/doctor_appointment_api/get_doctors.php'));
 //
 //     if (response.statusCode == 200) {
 //       setState(() {
@@ -655,7 +655,7 @@ class MyApp extends StatelessWidget {
 //     final formattedDate = "${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}";
 //
 //     final response = await http.get(
-//       Uri.parse('http://10.0.2.2/doctor_appointment_api/get_booked_times.php?date=$formattedDate&doctor_id=${widget.doctorId}'),
+//       Uri.parse('http://192.168.1.121/doctor_appointment_api/get_booked_times.php?date=$formattedDate&doctor_id=${widget.doctorId}'),
 //     );
 //
 //     if (response.statusCode == 200) {
@@ -695,7 +695,7 @@ class MyApp extends StatelessWidget {
 //     );
 //
 //     final response = await http.post(
-//       Uri.parse('http://10.0.2.2/doctor_appointment_api/book_appointment.php'),
+//       Uri.parse('http://192.168.1.121/doctor_appointment_api/book_appointment.php'),
 //       body: {
 //         'doctor_id': widget.doctorId.toString(),
 //         'description': _descriptionController.text,

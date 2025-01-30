@@ -40,6 +40,7 @@
 //     );
 //   }
 // }
+import 'package:dr_app_unbroken/screens/registration%20screens/add_patient_info_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'login_doctor_screen.dart';
@@ -71,7 +72,6 @@ class LoginScreen extends StatelessWidget {
               //         ),)
               //   ),
               // ),
-              const SizedBox(height: 150),
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: Image.asset("images/doctors.jpg"),
@@ -110,7 +110,7 @@ class LoginScreen extends StatelessWidget {
                       EdgeInsets.symmetric(vertical: 15, horizontal: 40 ),
                         child: Text("Doctor Login",
                           style: TextStyle(color: Colors.white,
-                              fontSize: 22,
+                              fontSize: 15,
                               fontWeight: FontWeight.bold),),),
 
                     ),
@@ -128,14 +128,30 @@ class LoginScreen extends StatelessWidget {
                       EdgeInsets.symmetric(vertical: 15, horizontal: 40 ),
                         child: Text("User Login",
                           style: TextStyle(color: Colors.white,
-                              fontSize: 22,
+                              fontSize: 15,
                               fontWeight: FontWeight.bold),),),
 
                     ),
                   ),
                 ],
-              )
-            ],
+              ),
+              SizedBox( height: 10),
+              Material(
+                  color: const Color(0xFF700031),
+                  borderRadius: BorderRadius.circular(10),
+                  child: InkWell(
+                  onTap: (){
+                    Navigator.push(
+                    context, MaterialPageRoute(
+                    builder: (context) => AddPatientInfoScreen()));
+                    },
+                  child: const Padding(padding:
+                    EdgeInsets.symmetric(vertical: 15, horizontal: 40 ),
+                      child: Text("Register Patients",
+                        style: TextStyle(color: Colors.white,
+                        fontSize: 15,
+                          fontWeight: FontWeight.bold),),),
+                  ))],
             // ),
           ),
         ));
